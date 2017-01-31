@@ -1,0 +1,76 @@
+---
+title: "Appendix B.4: Classification - Naive Bayes"
+output: html_document
+---
+##1.Preparation 
+### loading library
+```{r setup, include=FALSE}
+library(e1071)
+library(plotly)
+library(dplyr)
+library(rpart)
+```
+
+### read dataset
+```{r}
+injury <- read.csv('/Users/RuoyunDeng/Death_balancedRecode39.csv')
+
+for(i in 1:length(injury))
+      injury[,i] <- as.factor(injury[,i])
+```
+
+### split train and test sets
+```{r}
+Train_Size <- floor(0.75 * nrow(injury))
+
+set.seed(123)
+train_ind <- sample(seq_len(nrow(injury)), size = Train_Size)
+train <- injury[train_ind, ]
+test <- injury[-train_ind, ]
+```
+
+##2.Build Model
+###Train the model
+```{r}
+formular = CauseRecode39~  Education2003Revision +
+                           Sex +
+                           AgeRecode12 +  
+                           MaritalStatus + 
+                           DayOfWeekOfDeath + 
+                           RaceRecode5+
+                           MonthOfDeath
+                     
+
+result <- naiveBayes(formular, data = train)
+result$tables
+
+```
+
+##3. Prediction
+```{r}
+col_n <- grep('CauseRecode39', colnames(train))
+prediction <- predict(result, test[ ,-col_n])
+
+
+```
+
+##4.Prediction Accuracy
+```{r}
+test$prediction <- as.numeric(as.character(prediction))
+test$CauseRecode39 <- as.numeric(as.character(test$CauseRecode39))
+library(pROC)
+roc1 <- roc(test$prediction, test$CauseRecode39)
+plot(roc1)
+
+confusion <- as.data.frame(table(test[ ,col_n], prediction))
+colnames(confusion) <- c('Actual','Predict', 'Freq')
+
+plot <- ggplot(confusion) +
+  geom_tile(aes(x=Actual, y=Predict, fill=Freq))+ 
+  scale_x_discrete(name="Actual Class") + 
+  scale_y_discrete(name="Predicted Class") + 
+  labs(fill="Accurary")
+
+ggplotly(plot)
+```
+
