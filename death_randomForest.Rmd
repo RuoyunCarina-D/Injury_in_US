@@ -1,0 +1,80 @@
+---
+title: "Appendix B.3: Classification - Random forest"
+output: html_document
+---
+##1.Preparation 
+### loading library
+```{r}
+library(randomForest)
+library(ggplot2)
+library(plotly)
+library(caret)
+```
+
+### read dataset
+```{r setup, include=FALSE}
+balanced_injury <- read.csv("/Users/RuoyunDeng/Death_balancedRecode39.csv")
+```
+
+### modify all column except for Age into Factor
+```{r}
+for(i in 1:length(balanced_injury))
+      balanced_injury[,i] <- as.factor(balanced_injury[,i])
+```
+
+### Subset training and test datasets 
+```{r}
+smp_size <- floor(0.75 * nrow(balanced_injury))
+
+set.seed(123)
+train_ind <- sample(seq_len(nrow(balanced_injury)), size = smp_size, replace = FALSE)
+train <- balanced_injury[train_ind, ]
+test <- balanced_injury[-train_ind, ]
+```
+##2.Build Model
+###Train the model
+```{r}
+formular = CauseRecode39~  Education2003Revision +
+                          Sex +
+                          AgeRecode12 +  
+                          MaritalStatus + 
+                          DayOfWeekOfDeath + 
+                          RaceRecode5+
+                          MonthOfDeath
+
+set.seed(123)
+RF <- randomForest(formular, data=train, ntree = 50, mtry = 7)
+```
+
+#### Visualization of model
+```{r}
+print(RF)
+```
+##### importance of variable
+```{r}
+varImpPlot(RF)
+RF$importance
+```
+
+###3.Prediction
+```{r}
+RFpred <- predict(RF, test)
+```
+
+#### Prediction Accuracy
+```{r}
+col_n <- grep('CauseRecode39', colnames(train))
+
+confusion <- as.data.frame(table(test[ ,col_n], RFpred))
+colnames(confusion) <- c('Actual','Predict', 'Freq')
+
+plot <- ggplot(confusion) +
+  geom_tile(aes(x=Actual, y=Predict, fill=Freq))+ 
+  scale_x_discrete(name="Actual Class") + 
+  scale_y_discrete(name="Predicted Class") + 
+  labs(fill="Accurary")
+
+ggplotly(plot)
+```
+
+
