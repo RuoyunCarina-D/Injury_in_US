@@ -1,4 +1,5 @@
-### different types of injury in original datasets were seriously unbalanced which leads to underrepresented situation for several types
+# Different types of injury in original datasets were seriously unbalanced 
+# which leads to underrepresented situation for several types
 
 origdata <- read.csv('InjuryDeathRecords.csv')
 
