@@ -1,6 +1,7 @@
 # Different types of injury in original datasets were seriously unbalanced 
 # which leads to underrepresented situation for several types
 
+#read originial data
 origdata <- read.csv('InjuryDeathRecords.csv')
 
 for(i in 1:length(new_sex))
@@ -16,9 +17,7 @@ data2 <- rbind(data1, g38)
 hist(data2$CauseRecode39)
 g41 <- origdata[origdata$CauseRecode39 == 41, ]
 data4 <- rbind(data2, g41, g41,g41,g41)
-
 data5 <- rbind(data4, g42, g4,g42,g42, g42, g42)
-
 data6 <- rbind(data5, g42, g42,g42,g42, g42, g42)
 
 data7 <- data6[,c("Id", 
