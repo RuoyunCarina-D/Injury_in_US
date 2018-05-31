@@ -13,7 +13,7 @@ library(rpart)
 
 ### read dataset
 ```{r}
-injury <- read.csv('/Users/RuoyunDeng/Death_balancedRecode39.csv')
+injury <- read.csv('~/Death_balancedRecode.csv')
 
 for(i in 1:length(injury))
       injury[,i] <- as.factor(injury[,i])
