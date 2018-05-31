@@ -13,7 +13,7 @@ library(caret)
 
 ### read dataset
 ```{r setup, include=FALSE}
-balanced_injury <- read.csv("Death_balancedRecode39.csv")
+balanced_injury <- read.csv("~/Death_balancedRecode39.csv")
 ```
 
 ### modify all column except for Age into Factor
